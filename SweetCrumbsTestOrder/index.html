@@ -1,6 +1,117 @@
-<form id="orderForm">
-  <input type="text" id="item" placeholder="Item Name" required>
-  <input type="number" id="quantity" placeholder="Qty" required>
-  <textarea id="notes" placeholder="Special Instructions"></textarea>
-  <button type="submit">Send to Kitchen</button>
-</form>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kitchen Order System</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --bg: #f8fafc;
+            --text: #1e293b;
+        }
+        body { 
+            font-family: -apple-system, sans-serif; 
+            background: var(--bg); 
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+        .card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+        h2 { margin-top: 0; color: var(--primary); }
+        .form-group { margin-bottom: 1rem; }
+        label { display: block; margin-bottom: 0.5rem; font-weight: 600; }
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            box-sizing: border-box; /* Crucial for mobile sizing */
+            font-size: 16px; /* Prevents iOS auto-zoom on focus */
+        }
+        button {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        #status {
+            margin-top: 1rem;
+            text-align: center;
+            font-weight: 500;
+        }
+        .success { color: #059669; }
+        .error { color: #dc2626; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>New Order</h2>
+    <form id="orderForm">
+        <div class="form-group">
+            <label for="item">Item</label>
+            <select id="item" required>
+                <option value="">Select an item...</option>
+                <option value="Sourdough Loaf">Sourdough Loaf</option>
+                <option value="Croissant">Croissant</option>
+                <option value="Bagel">Bagel</option>
+                <option value="Custom Order">Custom / Other</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="quantity">Quantity</label>
+            <input type="number" id="quantity" min="1" value="1" required>
+        </div>
+
+        <div class="form-group">
+            <label for="notes">Kitchen Notes</label>
+            <textarea id="notes" rows="3" placeholder="Allergies, heating instructions, etc."></textarea>
+        </div>
+
+        <button type="submit" id="submitBtn">Send to Kitchen</button>
+    </form>
+    <div id="status"></div>
+</div>
+
+<script>
+    // PASTE YOUR GOOGLE WEB APP URL HERE
+    const scriptURL = 'YOUR_GOOGLE_WEB_APP_URL_HERE';
+    const form = document.getElementById('orderForm');
+    const btn = document.getElementById('submitBtn');
+    const statusDiv = document.getElementById('status');
+
+    form.addEventListener('submit', e => {
+        e.preventDefault();
+        
+        // UI Feedback
+        btn.disabled = true;
+        btn.innerText = 'Sending...';
+        statusDiv.innerText = '';
+
+        const data = {
+            item: document.getElementById('item').value,
+            quantity: document.getElementById('quantity').value,
+            notes: document.getElementById('notes').value
+        };
+
+        // Send to Google Sheets
+        fetch(scriptURL, {
+            method: 'POST',
+            mode: 'no-cors', // Use no
