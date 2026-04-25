@@ -3,135 +3,92 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kitchen Order System</title>
+    <title>Kitchen Auth System</title>
     <style>
-        :root {
-            --primary: #2563eb;
-            --bg: #f8fafc;
-            --text: #1e293b;
-        }
-        body { 
-            font-family: -apple-system, sans-serif; 
-            background: var(--bg); 
-            color: var(--text);
-            display: flex;
-            justify-content: center;
-            padding: 20px;
-        }
-        .card {
-            background: white;
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-            width: 100%;
-            max-width: 400px;
-        }
-        h2 { margin-top: 0; color: var(--primary); }
-        .form-group { margin-bottom: 1rem; }
-        label { display: block; margin-bottom: 0.5rem; font-weight: 600; }
-        input, textarea, select {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #cbd5e1;
-            border-radius: 6px;
-            box-sizing: border-box; /* Crucial for mobile sizing */
-            font-size: 16px; /* Prevents iOS auto-zoom on focus */
-        }
-        button {
-            width: 100%;
-            padding: 14px;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: opacity 0.2s;
-        }
-        button:disabled { opacity: 0.5; cursor: not-allowed; }
-        #status {
-            margin-top: 1rem;
-            text-align: center;
-            font-weight: 500;
-        }
-        .success { color: #059669; }
-        .error { color: #dc2626; }
+        body { font-family: sans-serif; background: #f0f2f5; display: flex; justify-content: center; padding: 20px; }
+        .container { background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); width: 100%; max-width: 400px; }
+        .hidden { display: none !important; }
+        input, select, textarea, button { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+        button { background: #2563eb; color: white; border: none; font-weight: bold; cursor: pointer; }
+        .logout-btn { background: #64748b; margin-top: 20px; }
     </style>
 </head>
 <body>
 
-<div class="card">
-    <h2>New Order</h2>
-    <form id="orderForm">
-        <div class="form-group">
-            <label for="item">Item</label>
+    <div id="loginSection" class="container">
+        <h2>Kitchen Login</h2>
+        <input type="email" id="loginEmail" placeholder="Email">
+        <input type="password" id="loginPassword" placeholder="Password">
+        <button id="loginBtn">Login</button>
+        <p id="loginError" style="color: red;"></p>
+    </div>
+
+    <div id="orderSection" class="container hidden">
+        <h2>New Order</h2>
+        <form id="orderForm">
             <select id="item" required>
-                <option value="">Select an item...</option>
-                <option value="Sourdough Loaf">Sourdough Loaf</option>
+                <option value="Sourdough">Sourdough</option>
                 <option value="Croissant">Croissant</option>
-                <option value="Bagel">Bagel</option>
-                <option value="Custom Order">Custom / Other</option>
             </select>
-        </div>
+            <input type="number" id="quantity" value="1">
+            <textarea id="notes" placeholder="Notes"></textarea>
+            <button type="submit" id="submitBtn">Send to Kitchen</button>
+        </form>
+        <button class="logout-btn" id="logoutBtn">Logout</button>
+    </div>
 
-        <div class="form-group">
-            <label for="quantity">Quantity</label>
-            <input type="number" id="quantity" min="1" value="1" required>
-        </div>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-        <div class="form-group">
-            <label for="notes">Kitchen Notes</label>
-            <textarea id="notes" rows="3" placeholder="Allergies, heating instructions, etc."></textarea>
-        </div>
-
-        <button type="submit" id="submitBtn">Send to Kitchen</button>
-    </form>
-    <div id="status"></div>
-</div>
-
-<script>
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbwtyOdMjYx8XanduTMejYcij_SqbGPciIX-pHE01Ow3Oxj2Cl8kHm4lzUZC0HMX-TOc/exec';
-    const form = document.getElementById('orderForm');
-    const btn = document.getElementById('submitBtn');
-    const statusDiv = document.getElementById('status');
-
-    form.addEventListener('submit', e => {
-        e.preventDefault();
-        
-        // UI Feedback
-        btn.disabled = true;
-        btn.innerText = 'Sending...';
-        statusDiv.innerText = '';
-
-        const data = {
-            item: document.getElementById('item').value,
-            quantity: document.getElementById('quantity').value,
-            notes: document.getElementById('notes').value
+        const firebaseConfig = {
+          apiKey: "AIzaSyDGrJNt2dPdVpElv_XHM3QT0wK_p3HT-TQ",
+          authDomain: "sweetcrumbs-1d258.firebaseapp.com",
+          projectId: "sweetcrumbs-1d258",
+          storageBucket: "sweetcrumbs-1d258.firebasestorage.app",
+          messagingSenderId: "949428530628",
+          appId: "1:949428530628:web:0db79ac88d09a1c6e38891",
+          measurementId: "G-MB1ZH59DSZ"
         };
 
-        fetch(scriptURL, {
-            method: 'POST',
-            mode: 'no-cors', // Use no-cors for Google Apps Script redirects
-            cache: 'no-cache',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data),
-        })
-        .then(() => {
-            statusDiv.className = 'success';
-            statusDiv.innerText = '✓ Order Sent to Kitchen!';
-            form.reset();
-        })
-        .catch(error => {
-            statusDiv.className = 'error';
-            statusDiv.innerText = 'Error: ' + error.message;
-        })
-        .finally(() => {
-            btn.disabled = false;
-            btn.innerText = 'Send to Kitchen';
-        });
-    });
-</script>
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const gSheetsURL = 'https://script.google.com/macros/s/AKfycbwtyOdMjYx8XanduTMejYcij_SqbGPciIX-pHE01Ow3Oxj2Cl8kHm4lzUZC0HMX-TOc/exec';
 
+        const loginSection = document.getElementById('loginSection');
+        const orderSection = document.getElementById('orderSection');
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                loginSection.classList.add('hidden');
+                orderSection.classList.remove('hidden');
+            } else {
+                loginSection.classList.remove('hidden');
+                orderSection.classList.add('hidden');
+            }
+        });
+
+        document.getElementById('loginBtn').addEventListener('click', () => {
+            const email = document.getElementById('loginEmail').value;
+            const pass = document.getElementById('loginPassword').value;
+            signInWithEmailAndPassword(auth, email, pass)
+                .catch(err => document.getElementById('loginError').innerText = err.message);
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', () => signOut(auth));
+
+        document.getElementById('orderForm').addEventListener('submit', e => {
+            e.preventDefault();
+            const data = {
+                item: document.getElementById('item').value,
+                quantity: document.getElementById('quantity').value,
+                notes: document.getElementById('notes').value,
+                user: auth.currentUser.email // Track who sent it!
+            };
+
+            fetch(gSheetsURL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) })
+            .then(() => { alert("Sent!"); e.target.reset(); });
+        });
+    </script>
 </body>
 </html>
