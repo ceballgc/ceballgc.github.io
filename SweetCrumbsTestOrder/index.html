@@ -91,7 +91,6 @@
 </div>
 
 <script>
-    // PASTE YOUR GOOGLE WEB APP URL HERE
     const scriptURL = 'https://script.google.com/macros/s/AKfycbwtyOdMjYx8XanduTMejYcij_SqbGPciIX-pHE01Ow3Oxj2Cl8kHm4lzUZC0HMX-TOc/exec';
     const form = document.getElementById('orderForm');
     const btn = document.getElementById('submitBtn');
@@ -111,7 +110,28 @@
             notes: document.getElementById('notes').value
         };
 
-        // Send to Google Sheets
         fetch(scriptURL, {
             method: 'POST',
-            mode: 'no-cors', // Use no
+            mode: 'no-cors', // Use no-cors for Google Apps Script redirects
+            cache: 'no-cache',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+        })
+        .then(() => {
+            statusDiv.className = 'success';
+            statusDiv.innerText = '✓ Order Sent to Kitchen!';
+            form.reset();
+        })
+        .catch(error => {
+            statusDiv.className = 'error';
+            statusDiv.innerText = 'Error: ' + error.message;
+        })
+        .finally(() => {
+            btn.disabled = false;
+            btn.innerText = 'Send to Kitchen';
+        });
+    });
+</script>
+
+</body>
+</html>
