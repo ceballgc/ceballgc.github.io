@@ -18,28 +18,33 @@
         </div>
     </div>
 
-    <div id="orderSection" class="hidden pos-container">
-        
-        <div class="menu-grid" id="menuGrid">
+    <div id="orderSection" class="hidden main-wrapper">
+        <header class="app-header">
+            <div class="logo">Bakery Kitchen</div>
+            <div class="header-right">
+                <span id="userBadge"></span>
+                <button id="logoutBtn" class="logout-link">Logout</button>
             </div>
+        </header>
 
-        <div class="sidebar">
-            <div class="sidebar-header">
-                <h3>Current Order</h3>
-                <span id="userBadge" class="user-badge"></span>
-            </div>
-            
-            <div id="cartItems" class="cart-items">
-                <p id="emptyMsg">Cart is empty</p>
-            </div>
+        <div class="pos-container">
+            <div class="menu-grid" id="menuGrid"></div>
 
-            <div class="sidebar-footer">
-                <div class="total-row">
-                    <span>Total:</span>
-                    <span id="totalPrice">$0.00</span>
+            <div class="sidebar">
+                <div class="sidebar-content">
+                    <h3>Current Order</h3>
+                    <div id="cartItems" class="cart-items">
+                        <p id="emptyMsg">Cart is empty</p>
+                    </div>
                 </div>
-                <button id="checkoutBtn">Send to Kitchen</button>
-                <button id="logoutBtn" class="secondary-btn">Logout</button>
+
+                <div class="sidebar-footer">
+                    <div class="total-row">
+                        <span>Total:</span>
+                        <span id="totalPrice">$0.00</span>
+                    </div>
+                    <button id="checkoutBtn">Send to Kitchen</button>
+                </div>
             </div>
         </div>
     </div>
