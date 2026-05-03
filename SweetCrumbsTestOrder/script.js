@@ -11,13 +11,11 @@ const firebaseConfig = {
   measurementId: "G-MB1ZH59DSZ"
 };
 
-// URL from your Google Apps Script Deployment
-const G_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbxzd--HfpNWEpAA70blXVamogRGf4oENFq2v1mY_Y04LxgfsNZVqS4ziGShSzBQuUTQvQ/exec';
+const G_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbz-bh2BwziLC9IIo-taW_3lIoQm67uL4mFjvKqBXBxtejON-d0_ACFpVVje_zZ0mfQ2fQ/exec';
 
 let cart = [];
 const auth = getAuth(initializeApp(firebaseConfig));
 
-// --- INITIALIZATION ---
 onAuthStateChanged(auth, (user) => {
     const loginSection = document.getElementById('loginSection');
     const orderSection = document.getElementById('orderSection');
@@ -30,7 +28,6 @@ onAuthStateChanged(auth, (user) => {
         const badge = document.getElementById('userBadge');
         if (badge) badge.innerText = user.email;
 
-        // Check which page we are on to load appropriate data
         if (document.getElementById('menuGrid')) {
             loadMenu();
         }
@@ -41,7 +38,6 @@ onAuthStateChanged(auth, (user) => {
     }
 });
 
-// --- AUTHENTICATION ---
 const loginBtn = document.getElementById('loginBtn');
 if (loginBtn) {
     loginBtn.onclick = () => {
@@ -56,7 +52,7 @@ if (logoutBtn) {
     logoutBtn.onclick = () => signOut(auth);
 }
 
-// --- FOH: MENU & CART LOGIC ---
+
 async function loadMenu() {
     try {
         const response = await fetch(`${G_SHEETS_URL}?action=getMenu`);
@@ -135,7 +131,6 @@ if (checkoutBtn) {
     };
 }
 
-// --- BOH: KITCHEN LOGIC ---
 async function fetchOrders() {
     const container = document.getElementById('kitchenOrders');
     if (!container) return;
@@ -166,8 +161,7 @@ async function fetchOrders() {
 
 window.handleStatusUpdate = async (id, currentStatus) => {
     let nextStatus = currentStatus === 'Pending' ? 'Preparing' : 'Completed';
-    
-    // Simple visual feedback
+
     event.currentTarget.style.opacity = '0.5';
 
     try {
