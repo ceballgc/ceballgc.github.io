@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bakery Analytics</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="main-wrapper">
+        <header class="app-header">
+            <div class="logo">Sales Insights</div>
+            <div class="header-right">
+                <a href="index.html" class="nav-link">POS</a>
+                <input type="date" id="datePicker" style="padding: 5px; border-radius: 4px; border: none;">
+            </div>
+        </header>
+
+        <div style="padding: 20px; overflow-y: auto;">
+            <!-- Stat Cards -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;">
+                <div class="order-card" style="border-left-color: var(--primary); margin:0; text-align: center;">
+                    <small>Completed Orders</small><h2 id="stat-orders">0</h2>
+                </div>
+                <div class="order-card" style="border-left-color: var(--success); margin:0; text-align: center;">
+                    <small>Items Sold</small><h2 id="stat-items">0</h2>
+                </div>
+            </div>
+
+            <!-- Chart Container -->
+            <div style="background: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+                <canvas id="salesChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        const G_SHEETS_URL = 'YOUR_APPS_SCRIPT_URL';
+        let myChart = null;
+
+        // Initialize Date Picker (Max today, Min 60 days ago)
+        const picker = document.getElementById('datePicker');
+        const today = new Date();
+        const minDate = new Date();
+        minDate.setDate(today.getDate() - 60);
+        
+        picker.max = today.toISOString().split('T')[0];
+        picker.min = minDate.toISOString().split('T')[0];
+        picker.value = picker.max;
+
+        async function loadAnalytics(date) {
+            const resp = await fetch(`${G_SHEETS_URL}?action=getAnalytics&date=${date}`);
+            const data = await resp.json();
+            
+            // Update Stats
+            document.getElementById('stat-orders').innerText = data.summary.todaySalesCount || 0;
+            document.getElementById('stat-items').innerText = data.summary.todayItemsSold || 0;
+
+            renderChart(data.chartData);
+        }
+
+        function renderChart(bucketData) {
+            const ctx = document.getElementById('salesChart').getContext('2d');
+            
+            // Sort buckets by time and filter for min/max
+            const times = Object.keys(bucketData).sort((a, b) => {
+                const [h1, m1] = a.split(':').map(Number);
+                const [h2, m2] = b.split(':').map(Number);
+                return (h1 * 60 + m1) - (h2 * 60 + m2);
+            });
+
+            if (myChart) myChart.destroy();
+
+            myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: times,
+                    datasets: [{
+                        label: 'Orders per 30m',
+                        data: times.map(t => bucketData[t]),
+                        borderColor: '#2563eb',
+                        backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+                }
+            });
+        }
+
+        picker.onchange = (e) => loadAnalytics(e.target.value);
+        loadAnalytics(picker.value);
+    </script>
+</body>
+</html>
