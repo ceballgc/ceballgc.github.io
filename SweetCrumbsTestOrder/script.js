@@ -11,7 +11,7 @@ const firebaseConfig = {
   measurementId: "G-MB1ZH59DSZ"
 };
 
-const G_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbxzd--HfpNWEpAA70blXVamogRGf4oENFq2v1mY_Y04LxgfsNZVqS4ziGShSzBQuUTQvQ/exec';
+const G_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwZpL5j5PcPs2e4Lp1dutxJqm53Bv_Qw4Unps_5U6DqvzX_WzYY7PsYrTqixtDxiGYp/exec';
 
 const MENU_ITEMS = [
     { name: 'Sourdough', price: 12.00, img: 'https://images.unsplash.com/photo-1585478259715-876a6a81fc08?w=200' },
