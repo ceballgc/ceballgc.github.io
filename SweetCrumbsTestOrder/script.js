@@ -11,7 +11,7 @@ const firebaseConfig = {
   measurementId: "G-MB1ZH59DSZ"
 };
 
-const G_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbz-bh2BwziLC9IIo-taW_3lIoQm67uL4mFjvKqBXBxtejON-d0_ACFpVVje_zZ0mfQ2fQ/exec';
+const G_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwD2m_6r2xe3CWMZ4kdg3cEjukqTDmtuQbr7L2_IYpPyNA4RpWrD4GvS9r0NvHiZxiCiw/exec';
 
 let cart = [];
 const auth = getAuth(initializeApp(firebaseConfig));
