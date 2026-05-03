@@ -11,29 +11,23 @@
         <header class="app-header">
             <div class="logo">Kitchen Display</div>
             <div class="header-right">
-                <!-- Link back to the POS -->
-                <a href="index.html" class="nav-link">Back to POS</a>
+                <a href="index.html" class="nav-link">POS View</a>
                 <button onclick="location.reload()" class="logout-link">Refresh</button>
             </div>
         </header>
 
-        <!-- 
-          The script.js looks specifically for this ID to determine 
-          if it should start the kitchen polling logic.
-        -->
         <div id="kitchenOrders" style="padding: 15px; overflow-y: auto; flex: 1;">
-            <p style="text-align: center; color: #64748b; margin-top: 50px;">
-                Connecting to kitchen stream...
-            </p>
-        </div>
-
-        <!-- Dashboard Footer for Quick Stats (Optional placeholder) -->
-        <div id="kitchenStats" style="padding: 10px; background: #f1f5f9; border-top: 1px solid #e2e8f0; font-size: 12px; display: flex; justify-content: space-around; color: #475569;">
-            <span>Tap an order to start preparing. Tap again to complete.</span>
+            <p style="text-align: center; color: #64748b; margin-top: 50px;">Syncing orders...</p>
         </div>
     </div>
 
-    <!-- Main Logic Module -->
+    <!-- Modal Popup -->
+    <div id="orderModal" class="hidden modal-overlay">
+        <div id="modalContent" class="modal-box">
+            <!-- Dynamic Content -->
+        </div>
+    </div>
+
     <script type="module" src="script.js"></script>
 </body>
 </html>
