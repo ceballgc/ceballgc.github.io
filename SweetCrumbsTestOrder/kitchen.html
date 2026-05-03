@@ -11,79 +11,29 @@
         <header class="app-header">
             <div class="logo">Kitchen Display</div>
             <div class="header-right">
+                <!-- Link back to the POS -->
                 <a href="index.html" class="nav-link">Back to POS</a>
-                <button onclick="location.reload()" style="background: #334155; color: white; padding: 6px 12px; font-size: 12px;">Refresh</button>
+                <button onclick="location.reload()" class="logout-link">Refresh</button>
             </div>
         </header>
 
+        <!-- 
+          The script.js looks specifically for this ID to determine 
+          if it should start the kitchen polling logic.
+        -->
         <div id="kitchenOrders" style="padding: 15px; overflow-y: auto; flex: 1;">
-            <p id="statusMsg">Loading active orders...</p>
+            <p style="text-align: center; color: #64748b; margin-top: 50px;">
+                Connecting to kitchen stream...
+            </p>
+        </div>
+
+        <!-- Dashboard Footer for Quick Stats (Optional placeholder) -->
+        <div id="kitchenStats" style="padding: 10px; background: #f1f5f9; border-top: 1px solid #e2e8f0; font-size: 12px; display: flex; justify-content: space-around; color: #475569;">
+            <span>Tap an order to start preparing. Tap again to complete.</span>
         </div>
     </div>
 
-    <script type="module">
-        // Replace with your actual deployment URL from Google Apps Script
-        const G_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwZpL5j5PcPs2e4Lp1dutxJqm53Bv_Qw4Unps_5U6DqvzX_WzYY7PsYrTqixtDxiGYp/exec';
-
-        async function fetchOrders() {
-            try {
-                const resp = await fetch(`${G_SHEETS_URL}?action=getOrders`);
-                const orders = await resp.json();
-                renderOrders(orders);
-            } catch (err) {
-                document.getElementById('statusMsg').innerText = "Error loading orders. Check connection.";
-            }
-        }
-
-        function renderOrders(orders) {
-            const container = document.getElementById('kitchenOrders');
-            if (orders.length === 0) {
-                container.innerHTML = '<div style="text-align:center; margin-top:50px; color:#64748b;">No active orders! 🎉</div>';
-                return;
-            }
-
-            container.innerHTML = orders.map(o => `
-                <div class="order-card ${o.status.toLowerCase()}" onclick="handleStatusUpdate('${o.orderID}', '${o.status}')">
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                        <h3 style="margin:0;">#${o.orderID}</h3>
-                        <span style="font-size:12px; background:#f1f5f9; padding:4px 8px; border-radius:4px;">${o.status}</span>
-                    </div>
-                    <p style="font-size: 18px; margin: 10px 0;"><strong>${o.quantity}x ${o.item}</strong></p>
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top:10px;">
-                        <small style="color: #64748b;">Ordered by: ${o.user.split('@')[0]}</small>
-                        <small style="color: var(--primary); font-weight: bold;">Tap to Advance</small>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        window.handleStatusUpdate = async (id, currentStatus) => {
-            let nextStatus = currentStatus === 'Pending' ? 'Preparing' : 'Completed';
-            
-            // Optimistic UI update (visual feedback before server responds)
-            const card = event.currentTarget;
-            card.style.opacity = '0.5';
-            card.style.pointerEvents = 'none';
-
-            try {
-                await fetch(G_SHEETS_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    body: JSON.stringify({ orderID: id, status: nextStatus, action: 'update' })
-                });
-                
-                // Re-fetch to show new state
-                setTimeout(fetchOrders, 500); 
-            } catch (err) {
-                alert("Failed to update status");
-                card.style.opacity = '1';
-                card.style.pointerEvents = 'auto';
-            }
-        };
-
-        // Poll for new orders every 15 seconds
-        setInterval(fetchOrders, 15000);
-        fetchOrders();
-    </script>
+    <!-- Main Logic Module -->
+    <script type="module" src="script.js"></script>
 </body>
 </html>
