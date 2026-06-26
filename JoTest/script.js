@@ -1,21 +1,22 @@
 // --- Scroll Logic ---
 window.addEventListener('scroll', () => {
     const hero = document.getElementById('slideshow-container');
-    const body = document.body;
     const scrollY = window.scrollY;
+    
+    // Easing for smooth cinematic fade
     const fadeRange = 600; 
+    let rawOpacity = Math.min(scrollY / fadeRange, 1);
+    let easedOpacity = Math.pow(rawOpacity, 2); 
     
-    let easedOpacity = Math.pow(Math.min(scrollY / fadeRange, 1), 2); 
+    // Pass the variable to the body for all elements to use
+    document.body.style.setProperty('--scroll-opacity', easedOpacity);
     
-    body.style.setProperty('--scroll-opacity', easedOpacity);
-    
-    if (scrollY > 5) {
-        // hero.classList.add('shrunk');
-        body.classList.add('dark-mode');
-    } else {
-        // hero.classList.remove('shrunk');
-        body.classList.remove('dark-mode');
-    }
+    // Shrink hero only
+    // if (scrollY > 5) {
+    //     hero.classList.add('shrunk');
+    // } else {
+    //     hero.classList.remove('shrunk');
+    // }
 }, { passive: true });
 
 // --- Dynamic Image Loader (GitHub Optimized) ---
