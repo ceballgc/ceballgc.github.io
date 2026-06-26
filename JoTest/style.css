@@ -1,16 +1,15 @@
 /* --- Base Reset --- */
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
-/* The base state: Background and Text color morph via CSS variables */
 body { 
     font-family: 'Helvetica Neue', Arial, sans-serif; 
-    /* Morph background from #faf8f6 (250) to #050505 (5) */
+    /* Smooth background color shift using CSS variable */
     background-color: rgb(
         calc(250 - (245 * var(--scroll-opacity, 0))), 
         calc(250 - (245 * var(--scroll-opacity, 0))), 
         calc(250 - (245 * var(--scroll-opacity, 0)))
     );
-    /* Morph text from dark gray to off-white */
+    /* Smooth text color shift */
     color: rgb(
         calc(51 + (189 * var(--scroll-opacity, 0))), 
         calc(51 + (189 * var(--scroll-opacity, 0))), 
@@ -19,7 +18,7 @@ body {
     transition: none;
 }
 
-/* --- Dynamic Header --- */
+/* --- Header --- */
 header {
     position: fixed; top: 0; width: 100%; z-index: 100;
     display: flex; justify-content: space-between; align-items: center;
@@ -36,7 +35,7 @@ nav a {
     margin-left: 2rem; text-decoration: none; text-transform: uppercase; font-size: 0.85rem;
     color: rgb(calc(85 + (170 * var(--scroll-opacity, 0))), 85, 85);
 }
-.social-link { color: #d4af37 !important; font-size: 1.2rem; }
+.social-link {font-size: 1.2rem; }
 
 /* --- Sticky Hero --- */
 #slideshow-container {
@@ -72,17 +71,35 @@ nav a {
     opacity: var(--scroll-opacity, 0);
 }
 
-/* --- Portfolio Grid --- */
+/* --- Portfolio Grid (Responsive) --- */
 main { position: relative; z-index: 2; min-height: 100vh; padding-top: 5rem; }
 .portfolio { padding: 5rem 5%; text-align: center; }
+
+
 .portfolio-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 20px; margin-top: 3rem;
+    gap: 20px; 
+    margin-top: 3rem;
+    /* Default: 2 columns */
+    grid-template-columns: repeat(2, 1fr);
 }
+
+/* Tablet & Desktop: Expand columns */
+@media (min-width: 768px) {
+    .portfolio-grid {
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    }
+}
+
+/* Max 4 columns on large screens */
+@media (min-width: 1200px) {
+    .portfolio-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
 .portfolio-item {
-    height: 350px; background: #ccc; overflow: hidden;
-    /* Border shifts from gray to deep horror red */
+    height: 250px; background: #ccc; overflow: hidden;
     border: 1px solid rgb(calc(51 + (138 * var(--scroll-opacity, 0))), 51, 51);
     transition: transform 0.3s;
 }
@@ -91,5 +108,3 @@ main { position: relative; z-index: 2; min-height: 100vh; padding-top: 5rem; }
     transform: scale(1.03); 
     box-shadow: 0 0 20px rgba(139, 0, 0, calc(var(--scroll-opacity, 0) * 0.6));
 }
-
-/* check */
